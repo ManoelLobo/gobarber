@@ -2,3 +2,6 @@
 
 # Logs
 yarn-error.log
+
+# temp folder
+/tmp/
