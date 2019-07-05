@@ -104,6 +104,12 @@ class AppointmentController {
         .json({ error: 'Invalid permission for this appointment' });
     }
 
+    if (appointment.canceled_at !== null) {
+      return res
+        .status(401)
+        .json({ error: 'This appointment is already canceled' });
+    }
+
     if (!appointment.cancelable) {
       return res.status(401).json({
         error: "You can't cancel an appointment within less than 2 hours",
