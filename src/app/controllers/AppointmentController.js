@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { startOfHour, parseISO, isBefore, format, subHours } from 'date-fns';
+import { startOfHour, parseISO, isBefore, format } from 'date-fns';
 
 import Appointment from '../models/Appointment';
 import User from '../models/User';
@@ -16,7 +16,7 @@ class AppointmentController {
     const appointments = await Appointment.findAll({
       where: { user_id: req.userId, canceled_at: null },
       order: ['date'],
-      attributes: ['id', 'date'],
+      attributes: ['id', 'date', 'past', 'cancelable'],
       limit: 20,
       offset: (page - 1) * 20,
       include: [
@@ -104,9 +104,7 @@ class AppointmentController {
         .json({ error: 'Invalid permission for this appointment' });
     }
 
-    const limitDateToCancel = subHours(appointment.date, 2);
-
-    if (isBefore(limitDateToCancel, new Date())) {
+    if (!appointment.cancelable) {
       return res.status(401).json({
         error: "You can't cancel an appointment within less than 2 hours",
       });
